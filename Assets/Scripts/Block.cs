@@ -78,9 +78,8 @@ public class Block : MonoBehaviour
         _inputPoint = _camera.ScreenToWorldPoint(Input.mousePosition);
         _currenDragPoin = Vector2Int.RoundToInt((Vector2)transform.position - _center);
         _previousDragPoin = _currenDragPoin;
-        GameplayManager.Instance.board.Hover(_currenDragPoin,  _polyominoIndex);
+
         _previousMousePosition = Input.mousePosition;
-        Debug.Log("Mouse Down");
     }
 
     private void OnMouseDrag()
@@ -89,9 +88,11 @@ public class Block : MonoBehaviour
         if (currentMousePosition == _previousMousePosition) return;
         var inputDelta =(Vector2)(_camera.ScreenToWorldPoint(Input.mousePosition) - _inputPoint);
         transform.localPosition = _position + inputOffset + (Vector3)inputDelta;
-        if (currentMousePosition != _previousMousePosition)
+        _currenDragPoin = Vector2Int.RoundToInt((Vector2)transform.position - _center);
+        if (_currenDragPoin != _previousDragPoin)
         {
             _previousDragPoin = _currenDragPoin;
+            GameplayManager.Instance.board.Hover(_currenDragPoin,  _polyominoIndex);
             
         }
         _previousMousePosition = currentMousePosition;
@@ -99,10 +100,19 @@ public class Block : MonoBehaviour
 
     private void OnMouseUp()
     {
-        Debug.Log("Mouse Up");
+        _currenDragPoin = Vector2Int.RoundToInt((Vector2)transform.position - _center);
+        if (GameplayManager.Instance.board.Place(_currenDragPoin, _polyominoIndex) == true)
+        {
+            gameObject.SetActive(false);
+            GameplayManager.Instance.blocks.Remove();
+        }
+        
+        
         transform.localPosition = _position;
         transform.localScale = _scale;
         _previousMousePosition = Vector3.positiveInfinity;
+ 
+
     }
 
     #endregion

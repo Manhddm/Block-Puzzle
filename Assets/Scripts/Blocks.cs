@@ -4,6 +4,7 @@ using UnityEngine;
 public class Blocks : MonoBehaviour
 {
     [SerializeField] private Block[] blocks;
+    private int _blockCount = 0;
 
     private void Start()
     {
@@ -24,7 +25,18 @@ public class Blocks : MonoBehaviour
     {
         for (int i = 0; i < blocks.Length; i++)
         {
+            _blockCount++;
+            blocks[i].gameObject.SetActive(true);
             blocks[i].Show(0);
+        }
+    }
+
+    public void Remove()
+    {
+        _blockCount--;
+        if (_blockCount <= 0)
+        {
+            Generate();
         }
     }
 }
