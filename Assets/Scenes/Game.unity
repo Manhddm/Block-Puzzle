@@ -474,8 +474,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4366b0ed6fb61c94fab9cda6e9c73d93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Size: 8
   cellPrefab: {fileID: 692879852742560862, guid: 325245fe8135c32448c0058ff6936561, type: 3}
-  cellsTransform: {fileID: 1661724488}
+  gridContainer: {fileID: 1661724488}
 --- !u!1 &1154635357
 GameObject:
   m_ObjectHideFlags: 0
@@ -494,14 +495,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1154635358
-Transform:
+--- !u!224 &1154635358
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1154635357}
-  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -512,6 +512,11 @@ Transform:
   - {fileID: 691142754}
   m_Father: {fileID: 899521361}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1154635359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -524,10 +529,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d8752c4145171646909eb4611473c41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blocks:
+  _blocks:
   - {fileID: 56091633}
   - {fileID: 1366359828}
   - {fileID: 691142756}
+  cellSize: 0
 --- !u!210 &1154635360
 SortingGroup:
   m_ObjectHideFlags: 0

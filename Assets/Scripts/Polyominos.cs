@@ -2,40 +2,85 @@ using UnityEngine;
 
 public static class Polyominos
 {
-    private readonly static int[][,] polyminos = new int[][,]
+// Trong Polyominos.cs
+
+    public readonly static int[][,] shapes = new int[][,]
     {
+        new int[,] { { 1 } },
+        new int[,] { { 1, 1 } },
+        new int[,] { { 1 }, { 1 } },
+        new int[,] { { 1, 1, 1 } },
+        new int[,] { { 1 }, { 1 }, { 1 } },
+        new int[,] { { 1, 1, 1, 1 } },
+        new int[,] { { 1 }, { 1 }, { 1 }, { 1 } },
+        new int[,] { { 1, 1, 1, 1, 1 } },
+        new int[,] { { 1 }, { 1 }, { 1 }, { 1 }, { 1 } },
+        new int[,] 
+        { 
+            { 1, 1 }, 
+            { 1, 1 } 
+        },
+        new int[,] 
+        { 
+            { 1, 1, 1 }, 
+            { 1, 1, 1 }, 
+            { 1, 1, 1 } 
+        },
+        new int[,] 
+        { 
+            { 1, 0 }, 
+            { 1, 1 } 
+        },
+        new int[,] 
+        { 
+            { 0, 1 }, 
+            { 1, 1 } 
+        },
+        new int[,] 
+        { 
+            { 1, 1 }, 
+            { 1, 0 } 
+        },
+        new int[,] 
+        { 
+            { 1, 1 }, 
+            { 0, 1 } 
+        },
+        new int[,]
+        {
+            { 1, 0, 0 },
+            { 1, 0, 0 },
+            { 1, 1, 1 }
+        },
         new int[,]
         {
             { 0, 0, 1 },
             { 0, 0, 1 },
             { 1, 1, 1 }
+        },
+        new int[,]
+        {
+            { 1, 1, 1 },
+            { 1, 0, 0 },
+            { 1, 0, 0 }
+        },
+        new int[,]
+        {
+            { 1, 1, 1 },
+            { 0, 0, 1 },
+            { 0, 0, 1 }
         }
     };
-    public static int[,] Get(int index)    => polyminos[index];
-    public static int Length => polyminos.Length;
 
-    static Polyominos()
+    public static int[,] GetShape(int index)
     {
-        foreach (var polymino in polyminos)         
-        {
-            ReverseRow(polymino);
-        }
+        if (index < 0 || index >= shapes.Length) return shapes[0];
+        return shapes[index];
     }
-
-    private static void ReverseRow(int [,] polyomino)
+    
+    public static int[,] GetRandomShape()
     {
-        var polyominoRows = polyomino.GetLength(0); 
-        var polyominoColumns = polyomino.GetLength(1);
-        for (int i = 0; i < polyominoRows/2; i++)
-        {
-            var topRow = i;
-            var bottomRow = polyominoRows - 1 -i;
-            for (int j = 0; j < polyominoColumns; j++)
-            {
-                (polyomino[bottomRow, j], polyomino[topRow, j]) = (polyomino[topRow, j], polyomino[bottomRow, j]);
-            }
-            
-        }
+        return shapes[Random.Range(0, shapes.Length)];
     }
 
 }

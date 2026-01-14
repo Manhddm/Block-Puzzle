@@ -4,38 +4,64 @@ using UnityEngine;
 public class Cell : MonoBehaviour
 {
     [SerializeField] private Sprite normal;
-    [SerializeField] private Sprite highlight;
     private SpriteRenderer _spriteRenderer;
+    
+    private Color _baseColor;
 
     private void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        if (normal !=  null) _spriteRenderer.sprite = normal;
     }
 
-    public void Normal()
+    private void ValidateComponents()
     {
-        gameObject.SetActive(true);
-        _spriteRenderer.color = Color.white;
-        _spriteRenderer.sprite = normal;
+        if (_spriteRenderer == null) 
+        {
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+        }
+        if (_spriteRenderer.sprite == null && normal !=   null) _spriteRenderer.sprite = normal;
     }
 
-    public void Highlight()
-    {
-        gameObject.SetActive(true);
-        _spriteRenderer.color = Color.white;
-        _spriteRenderer.sprite = highlight;
-    }
-
-    public void Hover()
-    {
-        gameObject.SetActive(true);
-        _spriteRenderer.color = Color.white;
-        _spriteRenderer.color = new (1.0f, 1.0f, 1.0f, 0.5f);
-        _spriteRenderer.sprite = normal;
-    }
-    public void Hide()
+    public void SetEmpty()
     {
         gameObject.SetActive(false);
-        _spriteRenderer.color = Color.white;
     }
+
+    public void SetColor(Color color)
+    {
+        ValidateComponents();
+        _baseColor = color;
+        _baseColor.a = 1f;
+        if (_spriteRenderer != null)
+            _spriteRenderer.color = _baseColor;
+    }
+
+    public void SetFilled()
+    {
+        ValidateComponents();
+        gameObject.SetActive(true);
+        _spriteRenderer.sprite = normal;
+        _spriteRenderer.color = _baseColor;
+    }
+    public void SetHighlight(Color color)
+    {
+        ValidateComponents();
+        gameObject.SetActive(true);
+        _spriteRenderer.sprite = normal;
+        _spriteRenderer.color = Color.Lerp(color, Color.white, 0.5f);
+        
+    }
+
+    public void SetHover()
+    {
+        ValidateComponents();
+        gameObject.SetActive(true);
+        _spriteRenderer.sprite = normal;
+        var hoverColor = _baseColor;
+        
+        hoverColor.a = 0.5f;
+        _spriteRenderer.color = hoverColor;
+    }
+    
 }

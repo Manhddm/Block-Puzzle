@@ -1,119 +1,127 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
+
 
 public class Block : MonoBehaviour
 {
-    public const int Size = 5;
+    private const  int Size = 5;
     [SerializeField] private Cell cellPrefab;
-    private readonly Cell[,] _cells = new Cell[Size, Size];
-    private Vector3 _previousMousePosition = Vector3.positiveInfinity;
-    private Vector3 _position;
-    private Vector3 _scale;
-    [SerializeField] private Vector3 inputOffset = new Vector3(0.0f, 2.0f, 0.0f);
+    [SerializeField] private float dragScale = 1.0f;
+    [SerializeField] private Vector3 inputOffset = new Vector3(0.0f, 1.0f, 0.0f);
+    private Cell[,] _cells = new Cell[Size,Size];
+    private int[,] _shapeData = new int[Size,Size];
+    private int id;
+    [SerializeField]private Vector3 _startPos;
+    private Vector3 _startScale;
     private Camera _camera;
-    private Vector3 _inputPoint;
-    private int _polyominoIndex;
-    private Vector2Int _currenDragPoin;
-    private Vector2Int _previousDragPoin;
-    private Vector2 _center;
+    private bool _isDragging = false;
+    private int _shapeW, _shapeH;
+    private Vector2 center;
+    private Vector3 inputPos;
+    private Color[] _colors = new []{Color.blue, Color.green,  Color.red};
+    private Color color;
+    private Vector3 _previousMousePosition = Vector3.positiveInfinity;
+    private Vector2Int currentDragPoint;
     private void Awake()
     {
         _camera = Camera.main;
     }
-    public void Initialized()
+    
+    public void Init()
     {
-        for (int i = 0; i < Size; i++)
+        for (int x = 0; x < Size; x++)
         {
-            for (int j = 0; j < Size; j++)
+            for (int y = 0; y < Size; y++)
             {
-                // var position = new Vector3(Size, Size - 1 - i, 0);
-                // _cells[i, j] = Instantiate(cellPrefab, position, Quaternion.identity, transform);
-                _cells[i, j] = Instantiate(cellPrefab, transform);
+                var cell =  Instantiate(cellPrefab, transform);
+                cell.SetEmpty();
+                _cells[x, y] = cell;
             }
         }
-
-        _position = transform.position;
-        _scale = transform.localScale;
+        _startPos = transform.localPosition;
+        _startScale = transform.localScale;
     }
-
-    public void Show(int polyominoIndex)
+    public void Show(int shapeIndex)
     {
         Hide();
-        _polyominoIndex = polyominoIndex;
-        var polyomino = Polyominos.Get(polyominoIndex);
-        var polyominoRows = polyomino.GetLength(0);
-        var polyominoColumns = polyomino.GetLength(1);
-        _center = new Vector2(polyominoColumns*0.5f, polyominoRows*0.5f);
-        for (int i = 0; i < polyominoRows; i++)
+        id = shapeIndex;
+        _shapeData = Polyominos.GetShape(shapeIndex);
+        _shapeW = _shapeData.GetLength(0);
+        _shapeH = _shapeData.GetLength(1);
+        center = new Vector2(_shapeW * 0.5f, _shapeH * 0.5f);
+        color = _colors[Random.Range(0, _colors.Length)];
+        for (int x = 0; x < Size; x++)
         {
-            for (int j = 0; j < polyominoColumns; j++) 
+            for (int y = 0; y < Size; y++)
             {
-                if (polyomino[i, j] > 0)
+                bool isInsideShape = (x < _shapeW && y < _shapeH && _shapeData[x,y] ==1);
+                if (isInsideShape)
                 {
-                    _cells[i, j].transform.localPosition = new(j - _center.x + 0.5f, i- _center.y + 0.5f, 0.0f);
-                    _cells[i,j] .Normal();
+                    var cell = _cells[x,y];
+                    cell.transform.localPosition = new Vector3(x - center.x + 0.5f, y - center.y + 0.5f, 0f);
+                    cell.SetColor(color);
+                    cell.SetFilled();
+                }
+                else
+                {
+                    _cells[x,y].SetEmpty();
                 }
             }
         }
+        gameObject.SetActive(true);
     }
 
     public void Hide()
     {
-        for (int i = 0; i < Size; i++)
+        transform.localPosition = _startPos;
+        transform.localScale = _startScale;
+        for (int x = 0; x < Size; x++)
         {
-            for (int j = 0; j < Size; j++)
+            for (int y = 0; y < Size; y++)
             {
-                _cells[i,j].Hide();
+                _cells[x,y].SetEmpty();
             }
         }
     }
-
-    #region Mouse Events
-
     private void OnMouseDown()
     {
-        
-        transform.localPosition = _position + inputOffset;
-        transform.localScale = Vector3.one;
-        _inputPoint = _camera.ScreenToWorldPoint(Input.mousePosition);
-        _currenDragPoin = Vector2Int.RoundToInt((Vector2)transform.position - _center);
-        _previousDragPoin = _currenDragPoin;
-
+        transform.localPosition = _startPos + inputOffset;
+        transform.localScale = new Vector3(dragScale, dragScale, dragScale);
+        inputPos = _camera.ScreenToWorldPoint(Input.mousePosition);
+        var currentPos = Vector2Int.RoundToInt((Vector2)transform.position - center);
         _previousMousePosition = Input.mousePosition;
     }
 
     private void OnMouseDrag()
     {
-        var currentMousePosition = Input.mousePosition;
-        if (currentMousePosition == _previousMousePosition) return;
-        var inputDelta =(Vector2)(_camera.ScreenToWorldPoint(Input.mousePosition) - _inputPoint);
-        transform.localPosition = _position + inputOffset + (Vector3)inputDelta;
-        _currenDragPoin = Vector2Int.RoundToInt((Vector2)transform.position - _center);
-        if (_currenDragPoin != _previousDragPoin)
-        {
-            _previousDragPoin = _currenDragPoin;
-            GameplayManager.Instance.board.Hover(_currenDragPoin,  _polyominoIndex);
-            
-        }
-        _previousMousePosition = currentMousePosition;
+        var currentPos= Input.mousePosition;
+        if (currentPos == _previousMousePosition) return;
+        var inputDelta = (Vector2)(_camera.ScreenToWorldPoint(Input.mousePosition) - inputPos);
+        transform.localPosition = _startPos + inputOffset + (Vector3)inputDelta;
+        currentDragPoint =  Vector2Int.RoundToInt((Vector2)transform.position - center);
+        GameplayManager.Instance.board.Preview(currentDragPoint, Polyominos.GetShape(id), color);
+        _previousMousePosition = currentPos;
+        
+        
     }
 
     private void OnMouseUp()
     {
-        _currenDragPoin = Vector2Int.RoundToInt((Vector2)transform.position - _center);
-        if (GameplayManager.Instance.board.Place(_currenDragPoin, _polyominoIndex) == true)
+        if (!GameplayManager.Instance.board.TryPlace(currentDragPoint, Polyominos.GetShape(id), color))
+        {
+            transform.localPosition = _startPos;
+            var scale = GameplayManager.Instance.blocks.cellSize;
+            transform.localScale = new Vector3(scale, scale, scale);
+            GameplayManager.Instance.board.ClearPreview();
+        }
+        else
         {
             gameObject.SetActive(false);
-            GameplayManager.Instance.blocks.Remove();
+            GameplayManager.Instance.blocks.CheckRefill();
         }
-        
-        
-        transform.localPosition = _position;
-        transform.localScale = _scale;
-        _previousMousePosition = Vector3.positiveInfinity;
- 
-
     }
-
-    #endregion
+    
+    
 }

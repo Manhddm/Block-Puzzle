@@ -1,42 +1,47 @@
-using System;
 using UnityEngine;
 
 public class Blocks : MonoBehaviour
 {
-    [SerializeField] private Block[] blocks;
-    private int _blockCount = 0;
-
+    [SerializeField] private Block[] _blocks;
+    public float cellSize;
     private void Start()
     {
-        var blockWidth = (float)Board.Size/blocks.Length;
-        var cellSize = (float)Board.Size / (Block.Size * blocks.Length + blocks.Length + 1);
-        for (var i = 0; i < blocks.Length; i++)
+        var shapeW = (float)GameplayManager.Instance.board.Size / _blocks.Length;
+        cellSize = (float)GameplayManager.Instance.board.Size / (5 * _blocks.Length + _blocks.Length + 1);
+        for (int i = 0; i < _blocks.Length; i++)
         {
-            blocks[i].transform.localPosition = new Vector3(blockWidth * (i + 0.5f) + 0.25f, -0.25f - cellSize * 4.0f, 0f);
-            blocks[i].transform.localScale = new Vector3(cellSize, cellSize, cellSize);
-            blocks[i].Initialized();
-            
+            Vector3 startPos = new Vector3(shapeW * (i + 0.5f) + 0.25f, -0.25f - cellSize * 4.0f, 0f);
+            Vector3 startScale = new Vector3(cellSize, cellSize, cellSize);
+            _blocks[i].transform.localPosition = startPos;
+            _blocks[i].transform.localScale = startScale;
+            _blocks[i].Init(); 
         }
-
-        Generate(); 
+        SpawnBlocks();
     }
 
-    private void Generate()
+    public void SpawnBlocks()
     {
-        for (int i = 0; i < blocks.Length; i++)
+        for (int i = 0; i < _blocks.Length; i++)
         {
-            _blockCount++;
-            blocks[i].gameObject.SetActive(true);
-            blocks[i].Show(0);
+            _blocks[i].Show(Random.Range(0, Polyominos.shapes.Length));
         }
     }
 
-    public void Remove()
+    public void CheckRefill()
     {
-        _blockCount--;
-        if (_blockCount <= 0)
+        bool allUsed = true;
+        foreach (var block in _blocks)
         {
-            Generate();
+            if (block.gameObject.activeSelf)
+            {
+                allUsed = false;
+                break;
+            }
         }
-    }
+
+        if (allUsed)
+        {
+            SpawnBlocks();
+        }
+    } 
 }

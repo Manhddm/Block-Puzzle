@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 8787e10f5b59a3b4bba77828fc359cdc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: db182f87ddc1eab4f8955be6e5dbb00f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -100,5 +100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e22b677f5e91ef941871399c6565e77c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normal: {fileID: 21300000, guid: 8787e10f5b59a3b4bba77828fc359cdc, type: 3}
-  highlight: {fileID: 21300000, guid: b46a84a6c1dcff34d82e455adea85d96, type: 3}
+  normal: {fileID: 21300000, guid: db182f87ddc1eab4f8955be6e5dbb00f, type: 3}
+  highlight: {fileID: 21300000, guid: db182f87ddc1eab4f8955be6e5dbb00f, type: 3}
+  hoverColor: {r: 1, g: 1, b: 1, a: 0.5}
