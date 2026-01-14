@@ -132,23 +132,23 @@ public class Board : MonoBehaviour
 
     private void UnHiglight()
     {
-        foreach (var y in rowToClear)
+        foreach (var x in rowToClear)
         {
-            for (int row = 0; row < Size; row++)
+            for (int y = 0; y < Size; y++)
             {
-                if (_gridData[row, y] == 2)
+                if (_gridData[x, y] == 2)
                 {
-                    _gridCells[row, y].SetFilled();
+                    _gridCells[x, y].SetFilled();
                 }
             }
         }
-        foreach (var x in columnToClear)
+        foreach (var y in columnToClear)
         {
-            for (int col = 0; col < Size; col++)
+            for (int x = 0; x < Size; x++)
             {
-                if (_gridData[x, col] == 2)
+                if (_gridData[x, y] == 2)
                 {
-                    _gridCells[x, col].SetFilled();
+                    _gridCells[x, y].SetFilled();
                 }
             }
         }
@@ -156,19 +156,19 @@ public class Board : MonoBehaviour
     }
     private void LinesHightlight(Color color)
     {
-        foreach (var y in rowToClear)
+        foreach (var x in rowToClear)
         {
-            for (int row = 0; row < Size; row++)
+            for (int y = 0; y < Size; y++)
             {
-                if (_gridData[row, y] == 2)
+                if (_gridData[x, y] == 2)
                 {
-                    _gridCells[row, y].SetHighlight(color);
+                    _gridCells[x, y].SetHighlight(color);
                 }
             }
         }
-        foreach (var x in columnToClear)
+        foreach (var y in columnToClear)
         {
-            for (int y = 0; y < Size; y++)
+            for (int x = 0; x< Size; x++)
             {
                 if (_gridData[x, y] == 2)
                 {
@@ -180,19 +180,6 @@ public class Board : MonoBehaviour
 
     private bool CheckLines()
     {
-        for (int y = 0; y < Size; y++)
-        {
-            bool full = true;
-            for (int x = 0; x < Size; x++)
-            {
-                if (_gridData[x, y] == 0)
-                {
-                    full = false;
-                    break;
-                }
-            }
-            if (full)  rowToClear.Add(y);
-        }
         for (int x = 0; x < Size; x++)
         {
             bool full = true;
@@ -204,7 +191,20 @@ public class Board : MonoBehaviour
                     break;
                 }
             }
-            if (full)  columnToClear.Add(x);
+            if (full)  rowToClear.Add(x);
+        }
+        for (int y = 0; y < Size; y++)
+        {
+            bool full = true;
+            for (int x = 0; x < Size; x++)
+            {
+                if (_gridData[x, y] == 0)
+                {
+                    full = false;
+                    break;
+                }
+            }
+            if (full)  columnToClear.Add(y);
         }
         if (rowToClear.Count > 0 || columnToClear.Count > 0)
         {
@@ -219,20 +219,20 @@ public class Board : MonoBehaviour
 
     private void ClearLines()
     {
-        foreach (var y in rowToClear)
+        foreach (var x in rowToClear)
         {
-            for (int row = 0; row < Size; row++)
+            for (int y = 0; y < Size; y++)
             {
-                _gridData[row, y] = 0;
-                _gridCells[row, y].SetEmpty();
+                _gridData[x, y] = 0;
+                _gridCells[x, y].SetEmpty();
             }
         }
-        foreach (var x in columnToClear)
+        foreach (var y in columnToClear)
         {
-            for (int col = 0; col < Size; col++)
+            for (int x = 0; x < Size; x++)
             {
-                _gridData[x, col] = 0;
-                _gridCells[x, col].SetEmpty();
+                _gridData[x, y] = 0;
+                _gridCells[x, y].SetEmpty();
             }
         }
         rowToClear.Clear();

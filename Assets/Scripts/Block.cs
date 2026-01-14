@@ -9,7 +9,7 @@ public class Block : MonoBehaviour
     private const  int Size = 5;
     [SerializeField] private Cell cellPrefab;
     [SerializeField] private float dragScale = 1.0f;
-    [SerializeField] private Vector3 inputOffset = new Vector3(0.0f, 1.0f, 0.0f);
+    [SerializeField] private Vector3 inputOffset = new Vector3(0.0f, 2.0f, 0.0f);
     private Cell[,] _cells = new Cell[Size,Size];
     private int[,] _shapeData = new int[Size,Size];
     private int id;
