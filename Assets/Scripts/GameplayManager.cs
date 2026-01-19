@@ -1,6 +1,4 @@
-using System;
 using CommonScripts;
-using UnityEngine;
 
 public class GameplayManager : Singleton<GameplayManager>
 {

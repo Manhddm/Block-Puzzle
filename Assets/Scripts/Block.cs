@@ -12,15 +12,14 @@ public class Block : MonoBehaviour
     [SerializeField] private Vector3 inputOffset = new Vector3(0.0f, 2.0f, 0.0f);
     private Cell[,] _cells = new Cell[Size,Size];
     private int[,] _shapeData = new int[Size,Size];
-    private int id;
+    public int id;
     [SerializeField]private Vector3 _startPos;
     private Vector3 _startScale;
     private Camera _camera;
-    private bool _isDragging = false;
     private int _shapeW, _shapeH;
     private Vector2 center;
     private Vector3 inputPos;
-    private Color[] _colors = new []{Color.blue, Color.green,  Color.red};
+    private Color[] _colors = new []{Color.blue, Color.green,  Color.red, Color.cyan, Color.magenta, Color.yellow};
     private Color color;
     private Vector3 _previousMousePosition = Vector3.positiveInfinity;
     private Vector2Int currentDragPoint;
@@ -90,7 +89,7 @@ public class Block : MonoBehaviour
         transform.localPosition = _startPos + inputOffset;
         transform.localScale = new Vector3(dragScale, dragScale, dragScale);
         inputPos = _camera.ScreenToWorldPoint(Input.mousePosition);
-        var currentPos = Vector2Int.RoundToInt((Vector2)transform.position - center);
+        var currentPos = GameplayManager.Instance.board.WorldToGrid((Vector2)transform.position - center);
         _previousMousePosition = Input.mousePosition;
     }
 

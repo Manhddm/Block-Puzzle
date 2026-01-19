@@ -1,10 +1,9 @@
-using UnityEngine;
 
 public static class Polyominos
 {
 // Trong Polyominos.cs
 
-    public readonly static int[][,] shapes = new int[][,]
+    public readonly static int[][,] Shapes = new int[][,]
     {
         new int[,] { { 1 } },
         new int[,] { { 1, 1 } },
@@ -74,13 +73,9 @@ public static class Polyominos
 
     public static int[,] GetShape(int index)
     {
-        if (index < 0 || index >= shapes.Length) return shapes[0];
-        return shapes[index];
+        if (index < 0 || index >= Shapes.Length) return Shapes[0];
+        return Shapes[index];
     }
     
-    public static int[,] GetRandomShape()
-    {
-        return shapes[Random.Range(0, shapes.Length)];
-    }
 
 }

@@ -1,29 +1,35 @@
-using System;
+
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Board : MonoBehaviour
 {
-    public int Size = 8;
+    [FormerlySerializedAs("Size")] public int size = 8;
     [SerializeField] private Cell cellPrefab;
     [SerializeField] private Transform gridContainer;
 
     private Cell[,] _gridCells;
     private int[,] _gridData;
-    private List<Vector2Int> _currentPreviewPoints = new List<Vector2Int>();
-    private List<int> rowToClear  = new  List<int>();
-    private List<int> columnToClear = new  List<int>();
+    private readonly List<Vector2Int> _currentPreviewPoints = new List<Vector2Int>();
+    [SerializeField] private List<int> rowToClear  = new  List<int>();
+    private readonly List<int> _columnToClear = new  List<int>();
+    // private bool isLose = false;
 
 
+    private void Update()
+    {
+        CheckLose();
+    }
 
     public void Init()
     {
-        _gridCells = new Cell[Size, Size];
-        _gridData = new int[Size, Size];
+        _gridCells = new Cell[size, size];
+        _gridData = new int[size, size];
         _currentPreviewPoints.Clear();
-        for (int x = 0; x < Size; x++)
+        for (int x = 0; x < size; x++)
         {
-            for (int y = 0; y < Size; y++)
+            for (int y = 0; y < size; y++)
             {
                 var cell = Instantiate(cellPrefab, gridContainer);
                 cell.transform.position = new Vector3(x + 0.5f, y + 0.5f, 0);
@@ -32,14 +38,13 @@ public class Board : MonoBehaviour
             }
         }
     }
-    //Doi sang toa do luoi
     public Vector2Int WorldToGrid(Vector3 worldPosition)
     {
         int x = Mathf.RoundToInt(worldPosition.x);
         int y = Mathf.RoundToInt(worldPosition.y);
         return new Vector2Int(x, y);
     }
-    //Kiem tra xem co dat duoc khong
+
     public bool CanPlace(Vector2Int anchor, int[,] shape)
     {
         int width = shape.GetLength(0);
@@ -53,21 +58,20 @@ public class Board : MonoBehaviour
                 {
                     int gridX = anchor.x + x;
                     int gridY = anchor.y + y;
-                    if (gridX < 0 || gridX >= Size || gridY < 0 || gridY >= Size) return false;
+                    if (gridX < 0 || gridX >= size || gridY < 0 || gridY >= size) return false;
                     if (_gridData[gridX, gridY ] == 2) return false;
                 }
             }
         }
         return  true;
     }
-
-    //Hien thi bong mo (Hover / Preview)
+    
     public void Preview(Vector2Int anchor, int[,] shape, Color color)
     {
         ClearPreview();
         UnHiglight();
         rowToClear.Clear();
-        columnToClear.Clear();
+        _columnToClear.Clear();
         if (!CanPlace(anchor, shape)) return;
         
         int w =  shape.GetLength(0);
@@ -134,7 +138,7 @@ public class Board : MonoBehaviour
     {
         foreach (var x in rowToClear)
         {
-            for (int y = 0; y < Size; y++)
+            for (int y = 0; y < size; y++)
             {
                 if (_gridData[x, y] == 2)
                 {
@@ -142,9 +146,9 @@ public class Board : MonoBehaviour
                 }
             }
         }
-        foreach (var y in columnToClear)
+        foreach (var y in _columnToClear)
         {
-            for (int x = 0; x < Size; x++)
+            for (int x = 0; x < size; x++)
             {
                 if (_gridData[x, y] == 2)
                 {
@@ -158,7 +162,7 @@ public class Board : MonoBehaviour
     {
         foreach (var x in rowToClear)
         {
-            for (int y = 0; y < Size; y++)
+            for (int y = 0; y < size; y++)
             {
                 if (_gridData[x, y] == 2)
                 {
@@ -166,9 +170,9 @@ public class Board : MonoBehaviour
                 }
             }
         }
-        foreach (var y in columnToClear)
+        foreach (var y in _columnToClear)
         {
-            for (int x = 0; x< Size; x++)
+            for (int x = 0; x< size; x++)
             {
                 if (_gridData[x, y] == 2)
                 {
@@ -180,10 +184,10 @@ public class Board : MonoBehaviour
 
     private bool CheckLines()
     {
-        for (int x = 0; x < Size; x++)
+        for (int x = 0; x < size; x++)
         {
             bool full = true;
-            for (int y = 0; y < Size; y++)
+            for (int y = 0; y < size; y++)
             {
                 if (_gridData[x, y] == 0)
                 {
@@ -193,10 +197,10 @@ public class Board : MonoBehaviour
             }
             if (full)  rowToClear.Add(x);
         }
-        for (int y = 0; y < Size; y++)
+        for (int y = 0; y < size; y++)
         {
             bool full = true;
-            for (int x = 0; x < Size; x++)
+            for (int x = 0; x < size; x++)
             {
                 if (_gridData[x, y] == 0)
                 {
@@ -204,14 +208,14 @@ public class Board : MonoBehaviour
                     break;
                 }
             }
-            if (full)  columnToClear.Add(y);
+            if (full)  _columnToClear.Add(y);
         }
-        if (rowToClear.Count > 0 || columnToClear.Count > 0)
+        if (rowToClear.Count > 0 || _columnToClear.Count > 0)
         {
             return true;
         }
         rowToClear.Clear();
-        columnToClear.Clear();
+        _columnToClear.Clear();
         return false;
 
     }
@@ -221,22 +225,40 @@ public class Board : MonoBehaviour
     {
         foreach (var x in rowToClear)
         {
-            for (int y = 0; y < Size; y++)
+            for (int y = 0; y < size; y++)
             {
                 _gridData[x, y] = 0;
                 _gridCells[x, y].SetEmpty();
             }
         }
-        foreach (var y in columnToClear)
+        foreach (var y in _columnToClear)
         {
-            for (int x = 0; x < Size; x++)
+            for (int x = 0; x < size; x++)
             {
                 _gridData[x, y] = 0;
                 _gridCells[x, y].SetEmpty();
             }
         }
         rowToClear.Clear();
-        columnToClear.Clear();
+        _columnToClear.Clear();
+    }
+
+    public bool CheckLose()
+    {
+        var blocks = GameplayManager.Instance.blocks.GetBlocks();
+        foreach (var block in blocks)
+        {
+            if (!block.gameObject.activeSelf) continue;
+            for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    var vint = new Vector2Int(x, y);
+                    if (CanPlace(vint, Polyominos.GetShape(block.id))) return false;
+                }
+            }
+        }
+        return true;
     }
 
 }
